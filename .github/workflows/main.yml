@@ -5,22 +5,23 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build_extensions:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ghidra: ['10.4']
+        ghidra: ['11.3']
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
+          java-version: 21
           distribution: temurin
 
       - name: Get short SHA
@@ -34,11 +35,11 @@ jobs:
       - name: Build GhidraOrbis
         uses: eskatos/gradle-command-action@v2
         with:
-          gradle-version: 8.3
+          gradle-version: 8.5
           arguments: buildExtension -PGHIDRA_INSTALL_DIR=${{ env.GHIDRA_INSTALL_DIR }}
 
       - name: Upload GhidraOrbis Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           path: dist/*.zip
           if-no-files-found: error
@@ -46,15 +47,14 @@ jobs:
   push_release:
     if: |
       github.event_name == 'push' &&
-      github.repository == 'astrelsky/GhidraOrbis'
+      github.repository == 'Osyotr/GhidraOrbis'
     needs: build_extensions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh release create 1.0${{ GITHUB.RUN_NUMBER }} artifact/*.zip --target ${{ GITHUB.SHA }} -t 1.0${{ GITHUB.RUN_NUMBER }}
-
