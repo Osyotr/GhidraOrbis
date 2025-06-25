@@ -17,6 +17,7 @@ import ghidra.program.model.data.*;
 import ghidra.program.model.listing.*;
 import ghidra.program.model.mem.Memory;
 import ghidra.program.model.mem.MemoryBlock;
+import ghidra.program.util.*;
 import ghidra.util.exception.CancelledException;
 import ghidra.util.task.TaskMonitor;
 
@@ -174,21 +175,21 @@ public class OrbisElfProgramBuilder extends DefaultElfProgramBuilder {
 
 			Address addr = block.getStart().add(value);
 			Data d = listing.createData(addr, dt);
-			d.setComment(CodeUnit.EOL_COMMENT, "Hash Table - nbucket");
+			d.setComment(CommentType.EOL, "Hash Table - nbucket");
 			long nbucket = d.getScalar(0).getUnsignedValue();
 
 			addr = addr.add(d.getLength());
 			d = listing.createData(addr, dt);
-			d.setComment(CodeUnit.EOL_COMMENT, "Hash Table - nchain");
+			d.setComment(CommentType.EOL, "Hash Table - nchain");
 			long nchain = d.getScalar(0).getUnsignedValue();
 
 			addr = addr.add(d.getLength());
 			d = listing.createData(addr, new ArrayDataType(dt, (int) nbucket, dt.getLength()));
-			d.setComment(CodeUnit.EOL_COMMENT, "Hash Table - buckets");
+			d.setComment(CommentType.EOL, "Hash Table - buckets");
 
 			addr = addr.add(d.getLength());
 			d = listing.createData(addr, new ArrayDataType(dt, (int) nchain, dt.getLength()));
-			d.setComment(CodeUnit.EOL_COMMENT, "Hash Table - chains");
+			d.setComment(CommentType.EOL, "Hash Table - chains");
 		}
 		catch (Exception e) {
 			log("Failed to properly markup Hash table at " + hashTableAddr + ": " + getMessage(e));
